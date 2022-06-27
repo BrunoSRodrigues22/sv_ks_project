@@ -21,20 +21,49 @@ import k_and_s_pkg::*;
     output logic                    halt
 );
 
-// remove from here
-// signal added to test environment..
-logic [7:0] counter = 'd0;
+    logic node;
+    logic [4:0] program_counter;//Register PC
+    logic [15:0] instruction;//Register IR
+    
+    always_comb begin : Instruction_decoder
+        unique case(instruction)
+             
+        endcase
+    end : Instruction_decoder
+    
+    always @(posedge clk or negedge rst_n) begin 
+        if(~rst_n)
+            program_counter <= 'd0;
+        else
+            program_counter <= program_counter + 1;
+    end
+    
+    assign node = instruction[15];
+    
+    //assign decoded_instruction = (node==1'b1)?'d0:instruction[]
+    
+    
+    logic [4:0] mem_addr;
+    
+    //assign ram_write_enable = 
+    
+    assign halt = ( (&(program_counter))?1'b1:1'b0);
+    
+    //assign addr = (addr_sel==1'b1)?program_counter:mem_addr;//Mux_ctrl
 
-//process to test environment ... remove this
-always @(posedge clk or negedge rst_n) begin
-    if (~rst_n)
-        counter <= 'd0;
-    else
-        counter <= counter + 1;
-end
+    //assign instruction = 
+    
+/*
+    logic [7:0] counter = 'd0;
 
-assign halt = ( (&(counter)) ? 1'b1 : 1'b0);
-//until here !!!!
+    always @(posedge clk or negedge rst_n) begin
+        if (~rst_n)
+            counter <= 'd0;
+        else
+            counter <= counter + 1;
+    end
 
+    assign halt = ( (&(counter)) ? 1'b1 : 1'b0);
+*/
 
 endmodule : control_unit
