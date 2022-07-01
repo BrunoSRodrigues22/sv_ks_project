@@ -20,38 +20,104 @@ import k_and_s_pkg::*;
     output logic                    ram_write_enable,
     output logic                    halt
 );
-
-    logic node;
-    logic [4:0] program_counter;//Register PC
-    logic [15:0] instruction;//Register IR
     
-    always_comb begin : Instruction_decoder
-        unique case(instruction)
-             
+    logic [1:0] state;
+    logic fetch = 2'b00, decode = 2'b01, exec = 2'b10, wr_back = 2'b11; 
+
+    always @(posedge clk) begin : state_ctrl
+        unique case(state)
+           fetch : begin
+                pc_enable        <= 1'b1;
+                addr_sel         <= 1'b1;
+                ir_enable        <= 1'b1;
+                c_sel            <= 1'b0;
+                branch           <= 1'b0;
+                ram_write_enable <= 1'b0;
+                flags_reg_enable <= 1'b0;
+                write_reg_enable <= 1'b0;
+                halt             <= 1'b0;
+                state            <= decode;
+           end
+           
+           decode : begin
+                ir_enable <= 1'b0;
+                addr_sel  <= 1'b0;
+                c_sel     <= 1'b0;
+                pc_enable <= 1'b0;
+                branch    <= 1'b0;
+                
+                unique case(decoded_instruction)
+                    I_NOP : begin
+                        state <= fetch;
+                    end
+                    
+                    I_LOAD : begin
+                        
+                    end
+                    
+                    I_STORE : begin
+                    
+                    end
+                    
+                    I_MOVE : begin
+                    
+                    end
+                    
+                    I_ADD : begin
+                        operation <= 2'b00;
+                    end
+                    
+                    I_SUB : begin
+                        operation <= 2'b01;
+                    end
+                    
+                    I_AND : begin
+                        operation <= 2'b10;
+                    end
+                    
+                    I_OR : begin
+                        operation <= 2'b11;
+                    end
+                    
+                    I_BRANCH : begin
+                    
+                    end
+                    
+                    I_BZERO : begin
+                    
+                    end
+                    
+                    I_BNZERO : begin
+                    
+                    end
+                    
+                    I_BNZERO : begin
+                    
+                    end
+                    
+                    I_BNEG : begin
+                    
+                    end
+                    
+                    I_BNNEG : begin
+                    
+                    end
+                    
+                    I_HALT : begin
+                        halt <= 1'b1;
+                        //insert end
+                    end
+                endcase
+                
+                state     <= exec;
+           end
+           
+           exec : begin
+                
+           end
         endcase
-    end : Instruction_decoder
-    
-    always @(posedge clk or negedge rst_n) begin 
-        if(~rst_n)
-            program_counter <= 'd0;
-        else
-            program_counter <= program_counter + 1;
-    end
-    
-    assign node = instruction[15];
-    
-    //assign decoded_instruction = (node==1'b1)?'d0:instruction[]
-    
-    
-    logic [4:0] mem_addr;
-    
-    //assign ram_write_enable = 
-    
-    assign halt = ( (&(program_counter))?1'b1:1'b0);
-    
-    //assign addr = (addr_sel==1'b1)?program_counter:mem_addr;//Mux_ctrl
-
-    //assign instruction = 
+    end : state_ctrl
+ 
     
 /*
     logic [7:0] counter = 'd0;
