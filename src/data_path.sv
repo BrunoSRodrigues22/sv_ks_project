@@ -29,13 +29,6 @@ import k_and_s_pkg::*;
     logic  [4:0] program_counter;
     logic  [4:0] mem_addr;
     
-    always @(bus_a, bus_b, data_out) begin 
-        bus_a    <= reg_bank[a_addr];
-        bus_b    <= reg_bank[b_addr];
-        data_out <= bus_a;
-    end
-            
-    
     assign ram_addr = (addr_sel==1'b0)?mem_addr:program_counter;
     
     always_ff @(posedge clk) begin : ir_ctrl
@@ -47,27 +40,19 @@ import k_and_s_pkg::*;
         unique case(instruction[15:7])
             9'b000000000 : begin
                 decoded_instruction <= I_NOP;
-                //a_addr              <= 'b0;
-                //b_addr              <= 'b0;
-                //c_addr              <= 'b0;
                 mem_addr            <= instruction[4:0];
             end
             
             9'b100000010 : begin
                 decoded_instruction <= I_LOAD;
                 c_addr              <= instruction[6:5];
-                //mem_addr            <= instruction[4:0];
-                
-                //teste
                 b_addr              <= instruction[1:0];
                 a_addr              <= instruction[3:2];
             end
             
             9'b100000100 : begin
                 decoded_instruction <= I_STORE;
-                c_addr              <= instruction[6:5];
                 a_addr              <= instruction[6:5];
-                //mem_addr            <= instruction[4:0];
             end
             
             9'b100100010 : begin
@@ -108,49 +93,30 @@ import k_and_s_pkg::*;
             9'b000000010 : begin
                 decoded_instruction <= I_BRANCH;
                 mem_addr            <= instruction[4:0];
-                //teste
-                b_addr              <= instruction[1:0];
-                a_addr              <= instruction[3:2];
             end
             
             9'b000000100 : begin
                 decoded_instruction <= I_BZERO;
                 mem_addr            <= instruction[4:0];
-                //teste
-                b_addr              <= instruction[1:0];
-                a_addr              <= instruction[3:2];
             end
             
             9'b000010110 : begin
                 decoded_instruction <= I_BNZERO;
                 mem_addr            <= instruction[4:0];
-                //teste
-                b_addr              <= instruction[1:0];
-                a_addr              <= instruction[3:2];
             end
             
             9'b000000110 : begin
                 decoded_instruction <= I_BNEG;
                 mem_addr            <= instruction[4:0];
-                //teste
-                b_addr              <= instruction[1:0];
-                a_addr              <= instruction[3:2];
             end
             
             9'b000010100 : begin
                 decoded_instruction <= I_BNNEG;
                 mem_addr            <= instruction[4:0];
-                //teste
-                b_addr              <= instruction[1:0];
-                a_addr              <= instruction[3:2];
             end
             
             9'b111111111 : begin
                 decoded_instruction <= I_HALT;
-                //mem_addr            <= instruction[4:0];
-                //teste
-                //b_addr              <= instruction[1:0];
-                //a_addr              <= instruction[3:2];
             end
         endcase
     end : decode_comand
@@ -164,9 +130,9 @@ import k_and_s_pkg::*;
     end : write_reg_enable_ctrl
     
     always_comb begin: ula_control
-            //bus_a    <= reg_bank[a_addr];
-            //bus_b    <= reg_bank[b_addr];
-            //data_out <= bus_a;
+            bus_a    <= reg_bank[a_addr];
+            bus_b    <= reg_bank[b_addr];
+            data_out <= bus_a;
             
         unique case(operation)
             2'b00 : alu_out = bus_a || bus_b;
@@ -194,7 +160,6 @@ import k_and_s_pkg::*;
     
     always_ff @(posedge clk) begin : reg_pc
             if(~rst_n)
-            //if(rst_n == 1'b0)
                 program_counter <= 'b0;
             else
                 if(pc_enable == 1'b1) begin
