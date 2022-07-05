@@ -169,5 +169,7 @@ import k_and_s_pkg::*;
                         program_counter <= program_counter + 1;
                 end
     end : reg_pc
+
     
 endmodule : data_path
+
